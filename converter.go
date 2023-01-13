@@ -210,17 +210,21 @@ func (c *converter) addMermaidJS() string {
 func (c *converter) GenerateMermaidJS() string {
 
 	return `
-var m = document.createElement('script');
-m.setAttribute('src','https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js');
-m.async = false;
-m.addEventListener('load', function() {
-  try {
-    mermaid.initialize({startOnLoad: true});
-  } catch (error) {
-    console.error(error);
-  }
-});
-document.body.appendChild(m);
+function loadMermaid() {
+  const m = document.createElement('script');
+  m.setAttribute('src','https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js');
+  m.async = false;
+  m.addEventListener('load', function() {
+    try {
+      mermaid.initialize({startOnLoad: true});
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  document.body.appendChild(m);
+}
+
+loadMermaid();
 `
 
 }
@@ -231,30 +235,41 @@ func (c *converter) addHighlightJS(class string) string {
 func (c *converter) GenerateHighlightJS(class string) string {
 
 	out := `
-var s = document.createElement('script');
-s.setAttribute('src','https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js');
-s.async = false;
-s.addEventListener('load', function() {
-try {
-  document.querySelectorAll('.item pre code').forEach(el => {
-    hljs.highlightElement(el);
-  })
-  addButtons();
-} catch (error) {
-  console.error(error);
-}
-});
-document.body.appendChild(s);
+async function loadHighlightJS() {
+  await new Promise((resolve, reject) => {
+    const highlightScript = document.createElement("script");
+    highlightScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js';
+    highlightScript.onload = resolve;
+    highlightScript.onerror = reject;
+    document.body.appendChild(highlightScript);
+  });
 
-var g = document.createElement('script');
-g.setAttribute('src', 'https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/go.min.js');
-s.async = false;
-document.body.appendChild(g);
+  await new Promise((resolve, reject) => {
+    const golangScript = document.createElement("script");
+    golangScript.src = 'https:////cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/go.min.js';
+    golangScript.onload = resolve;
+    golangScript.onerror = reject;
+    document.body.appendChild(golangScript);
+  });
 
-var css = document.createElement('link')
-css.setAttribute('rel', 'stylesheet');
-css.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css');
-document.body.appendChild(css);
+  await new Promise((resolve, reject) => {
+    const css = document.createElement('link')
+    css.setAttribute('rel', 'stylesheet');
+    css.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css');
+    document.body.appendChild(css);
+    css.onload = resolve;
+    css.onerror = reject;
+  });
+
+  try {
+    document.querySelectorAll('.item pre code').forEach(el => {
+      hljs.highlightElement(el);
+    })
+    addButtons();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 function addButtons() {
   var snippets = document.getElementsByClassName('hljs');
@@ -278,6 +293,8 @@ function addButtons() {
     p.prepend(b)
   }
 }
+
+loadHighlightJS();
 `
 	out = strings.ReplaceAll(out, ".item", "."+class)
 	return out

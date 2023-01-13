@@ -40,7 +40,7 @@ func main() {
 	}
 
 	if *printHighlight {
-		out := lessonmd.Converter.GenerateHighlightJS()
+		out := lessonmd.Converter.GenerateHighlightJS(*wrapperClass)
 		io.WriteString(os.Stdout, out)
 		os.Exit(0)
 	}
