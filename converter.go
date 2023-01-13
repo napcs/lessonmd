@@ -11,6 +11,9 @@ import (
 	"go.abhg.dev/goldmark/mermaid"
 )
 
+// AppVersion is the version of the app itself
+var AppVersion = "0.0.1"
+
 // ConverterOptions specifies options for converting.
 // wrap: wrap the results with a div
 // wrapClass: class to give the outer wrapper div. Defaults to "item"
@@ -212,7 +215,7 @@ func (c *converter) GenerateMermaidJS() string {
 	return `
 function loadMermaid() {
   const m = document.createElement('script');
-  m.setAttribute('src','https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js');
+  m.src = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js';
   m.async = false;
   m.addEventListener('load', function() {
     try {

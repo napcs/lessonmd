@@ -1,7 +1,7 @@
 .PHONY: all
-all: windows mac_silicon mac_intel linux_64
+all: windows_64 mac_silicon mac_intel linux_64
 
-windows:
+windows_64:
 	mkdir -p dist/windows_64
 	env GOOS=windows GOARCH=amd64 go build -o dist/windows_64/lessonmd.exe bin/lessonmd.go
 

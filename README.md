@@ -1,21 +1,26 @@
 # Lesson Markdown Processor
 
-Minimal Markdown to HTML converter implemented using [Goldmark](https://github.com/yuin/goldmark) with support for Mermaid and GitHub-Flavored Markdown, with additional extensions for developing technical course content.
+Minimal Markdown to HTML converter implemented using [Goldmark](https://github.com/yuin/goldmark) with support for [GitHub-Flavored Markdown](https://github.github.com/gfm/), with additional extensions for developing technical course content.
 
 Supports
-* Mermaid diagrams
-* Tables
-* Strikethroughs
-* Automatic linking of URLs
-* Raw "pass-through" HTML
+* [Mermaid](https://mermaid.js.org/) diagrams.
+* Tables.
+* Strikethroughs.
+* Automatic linking of URLs.
+* Raw "pass-through" HTML.
+* Client-side highlighting of source code blocks with "copy to clipboard" functionality.
 
 It also has a few additional Markdown extensions for rendering commands and program output, as well as highlighting text.
-
-Generated code blocks are not marked up for syntax highlighting. Use [Highlight.js](https://highlightjs.org/) on the client to syntax highlight code. This tool can generate the appropriate Highlight.js JavaScript code as well as buttons to copy the code snippets.
 
 This tool can also emit a minimal starter stylesheet. Custom CSS is not supported with this tool. If you need it, append the output of this program after a `<style>` definition containing your CSS.
 
 The tool is designed to be used with other CLI tools or as part of a build chain. 
+
+Generated code blocks are not marked up for syntax highlighting. Use [Highlight.js](https://highlightjs.org/) on the client to syntax highlight code. This tool can generate the appropriate Highlight.js JavaScript code as well as buttons to copy the code snippets.
+
+## Installation
+
+Download the binary for your OS and place it on your `PATH`.
 
 ## Usage
 
@@ -45,13 +50,12 @@ If you need to convert multiple files, you can do this in Bash:
 for f in *.md; do lessonmd < "${f}" > "${f%.md}.html"; done
 ```
 
-
 The HTML output will be wrapped in a `<div>` tag with the class `item`, which will make styling easier. Use the `-no-wrap` flag to generate unwrapped output, or use the `-c` flag to specify a different class name.
 
-Use the `-include-style-tag` flag to generate a `<style>` block at the top of the document with some basic CSS styling you can build on.
+Use the `-include-stylesheet` flag to generate a `<style>` block at the top of the document with some basic CSS styling you can build on.
 
 ```bash
-lessonmd -include-style-tag < lesson.md > lesson.html
+lessonmd -include-stylesheet < lesson.md > lesson.html
 ```
 
 You can also emit the basic CSS file using the `-print-stylesheet` flag:
@@ -70,25 +74,35 @@ Use `-h` to see the options:
 
 ```
   -c string
-        class name for outer div (defaults to 'item' (default "item")
-  -h    Show help message
+        The class name for outer div (defaults to 'item'. (default "item")
+  -h    Show this help message.
   -include-highlight-js
         Include script tags to include Highlight.js client-side libraries from CDN and add copy-to-clipboard functionality.
   -include-mermaid-js
-        Include script tags for client-side Mermaid rendering
-  -include-style-tag
+        Include script tags for client-side Mermaid rendering.
+  -include-stylesheet
         Include CSS in a <style> tag in the output.
   -no-wrap
-        do not wrap output with outer div tag
+        Do not wrap output with outer <div> tag.
   -print-highlight-js
-        Print the JS code for client-side syntax and clipboard support
+        Print the JavaScript code for client-side syntax and clipboard support.
   -print-mermaid-js
-        Print the JS code for Mermaid support
+        Print the JavaScript code for Mermaid support.
   -print-stylesheet -c
         Print the CSS file to standard output. Provide optional parent class. (defaults to 'item' - use -c to change.)
   -use-mermaid-svg-renderer
-        Use SVG for Mermaid instead of JS
-  -v    prints current app version
+        Use embedded SVG for Mermaid instead of client-side JavaScript.
+  -v    Prints current app version.
+```
+
+To generate a single page with CSS, Highlight.js, and Mermaid support, use the following command:
+
+```bash
+lessonmd -include-highlight-js \
+         -include-mermaid-js \
+         -include-stylesheet \
+         -c "lesson_item" \
+         < examples/lesson.md > lesson.html
 ```
 
 ## Features
