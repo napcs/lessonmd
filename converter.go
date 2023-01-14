@@ -2,6 +2,9 @@ package lessonmd
 
 import (
 	"bytes"
+	"lessonmd/extensions/commandblocks"
+	"lessonmd/extensions/inlinehighlight"
+	"lessonmd/extensions/outputblocks"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -51,9 +54,9 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		goldmark.WithExtensions(
 			extension.GFM, // builtin
 			&mermaid.Extender{NoScript: true, RenderMode: mmRenderMode}, // imported
-			OutputExtender,    // custom -> outputblocks.go
-			InlineHighlighter, // custom -> inlinehighlight.go
-			CommandExtender,   // custom -> commandblokcs.go
+			outputblocks.OutputExtender,                                 // custom -> outputblocks.go
+			inlinehighlight.InlineHighlighter,                           // custom -> inlinehighlight.go
+			commandblocks.CommandExtender,                               // custom -> commandblokcs.go
 		),
 	)
 

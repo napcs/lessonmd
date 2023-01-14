@@ -185,18 +185,21 @@ This is built using Goldmark which supports Common Mark. Goldmark is a good fit 
 Here's a map of what the files are in the project:
 
 ```
-├── Makefile                      <- Builds all of the executables
-├── README.md                     <- this file
+.
+├── Makefile                <- Builds all of the executables
+├── README.md               <- this file
 ├── bin
-│   └── lessonmd.go               <- The CLI interface
-├── commandblocks.go              <- Parser and HTML renderer for command blocks
-├── converter.go                  <- The main Markdown to HTML converter
+│   └── lessonmd.go         <- The CLI interface
+├── converter.go            <- The main Markdown to HTML converter
+├── converter_test.go       <- Test cases
 ├── examples
-│   └── lesson.md                 <- An example doc 
+│   └── lesson.md           <- An example doc 
+├── extensions              <- Custom GoldMark extensions
+│   ├── commandblocks       <- Parser and HTML renderer for command blocks
+│   ├── inlinehighlight     <- Parser and HTML renderer for inline highlighting
+│   └── outputblocks        <- Parser and HTML renderer for output blocks
 ├── go.mod
-├── go.sum
-├── inlinehighlight.go            <- Parser and HTML renderer for inline highlighting
-└── outputblocks.go               <- Parser and HTML renderer for output blocks.
+└── go.sum
 ```
 
 ## Roadmap
