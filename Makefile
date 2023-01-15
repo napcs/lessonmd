@@ -1,5 +1,5 @@
 .PHONY: all
-all: windows_64 mac_silicon mac_intel linux_64
+all: windows_64 mac_silicon mac_intel linux_64 release
 
 windows_64:
 	mkdir -p dist/windows_64
