@@ -21,6 +21,7 @@ func main() {
 	highlightjs := flag.Bool("include-highlight-js", false, "Include script tags to include Highlight.js client-side libraries from CDN and add copy-to-clipboard functionality.")
 	mermaidJS := flag.Bool("include-mermaid-js", false, "Include script tags for client-side Mermaid rendering.")
 	styleTag := flag.Bool("include-stylesheet", false, "Include CSS in a <style> tag in the output.")
+	frontmatter := flag.Bool("include-frontmatter", false, "Include YAML frontmatter as a table. Defaults to false - frontmatter is omitted.")
 	mermaidSVG := flag.Bool("use-mermaid-svg-renderer", false, "Use embedded SVG for Mermaid instead of client-side JavaScript.")
 	printMermaid := flag.Bool("print-mermaid-js", false, "Print the JavaScript code for Mermaid support.")
 	printHighlight := flag.Bool("print-highlight-js", false, "Print the JavaScript code for client-side syntax and clipboard support.")
@@ -65,12 +66,13 @@ func main() {
 	}
 
 	o := lessonmd.ConverterOptions{
-		Wrap:             !*nowrap,
-		WrapperClass:     *wrapperClass,
-		AddStyleTag:      *styleTag,
-		AddHighlightJS:   *highlightjs,
-		UseSVGforMermaid: *mermaidSVG,
-		AddMermaidJS:     *mermaidJS,
+		Wrap:               !*nowrap,
+		WrapperClass:       *wrapperClass,
+		AddStyleTag:        *styleTag,
+		AddHighlightJS:     *highlightjs,
+		UseSVGforMermaid:   *mermaidSVG,
+		AddMermaidJS:       *mermaidJS,
+		IncludeFrontmatter: *frontmatter,
 	}
 
 	out, err := lessonmd.Converter.Run(markdown, o)

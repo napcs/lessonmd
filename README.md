@@ -52,6 +52,8 @@ for f in *.md; do lessonmd < "${f}" > "${f%.md}.html"; done
 
 The HTML output will be wrapped in a `<div>` tag with the class `item`, which will make styling easier. Use the `-no-wrap` flag to generate unwrapped output, or use the `-c` flag to specify a different class name.
 
+YAML frontmatter is skipped by default. To preserve it, add the `-include-frontmatter` flag which renders the front matter as an HTML table at the top of the document.
+
 Use the `-include-stylesheet` flag to generate a `<style>` block at the top of the document with some basic CSS styling you can build on.
 
 ```bash
@@ -76,6 +78,8 @@ Use `-h` to see the options:
   -c string
         The class name for outer div (defaults to 'item'. (default "item")
   -h    Show this help message.
+  -include-frontmatter
+        Include YAML frontmatter as a table. Defaults to false - frontmatter is omitted.
   -include-highlight-js
         Include script tags to include Highlight.js client-side libraries from CDN and add copy-to-clipboard functionality.
   -include-mermaid-js
@@ -213,7 +217,15 @@ There's a ton to do.
 
 What's not going to happen:
 * custom CSS: You can do this using `cat` to append your own stylesheet.
-* direct file reading and writing.
 * Full HTML page generation: Again, use `cat` or another tool to wrap this output with your own template.
 * Conversion to other formats: Use Pandoc to convert the HTML.
 
+## Changelog
+
+### 0.0.2 - 2023-01-17
+* If the document contains YAML front matter, it's ignored by default.
+* The `-include-frontmatter` flag renders front matter as an HTML table.
+
+### 0.0.1 - 2023-01-13
+
+* Initial release

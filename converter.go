@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/yuin/goldmark"
+	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
@@ -15,18 +16,19 @@ import (
 )
 
 // AppVersion is the version of the app itself
-var AppVersion = "0.0.1"
+var AppVersion = "0.0.2"
 
 // ConverterOptions specifies options for converting.
 // wrap: wrap the results with a div
 // wrapClass: class to give the outer wrapper div. Defaults to "item"
 type ConverterOptions struct {
-	Wrap             bool
-	WrapperClass     string
-	AddStyleTag      bool
-	AddHighlightJS   bool
-	UseSVGforMermaid bool
-	AddMermaidJS     bool
+	Wrap               bool
+	WrapperClass       string
+	AddStyleTag        bool
+	AddHighlightJS     bool
+	UseSVGforMermaid   bool
+	AddMermaidJS       bool
+	IncludeFrontmatter bool
 }
 
 type converter struct{}
@@ -43,6 +45,20 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		mmRenderMode = mermaid.RenderModeServer
 	}
 
+	var extensions = []goldmark.Extender{
+		extension.GFM, // builtin
+		&mermaid.Extender{NoScript: true, RenderMode: mmRenderMode}, // imported
+		outputblocks.OutputExtender,                                 // custom -> outputblocks.go
+		inlinehighlight.InlineHighlighter,                           // custom -> inlinehighlight.go
+		commandblocks.CommandExtender,                               // custom -> commandblokcs.go
+	}
+
+	if o.IncludeFrontmatter {
+		extensions = append(extensions, meta.New(meta.WithTable()))
+	} else {
+		extensions = append(extensions, meta.Meta)
+	}
+
 	md := goldmark.New(
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
@@ -51,13 +67,7 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		goldmark.WithRendererOptions(
 			html.WithUnsafe(), // allow raw html
 		),
-		goldmark.WithExtensions(
-			extension.GFM, // builtin
-			&mermaid.Extender{NoScript: true, RenderMode: mmRenderMode}, // imported
-			outputblocks.OutputExtender,                                 // custom -> outputblocks.go
-			inlinehighlight.InlineHighlighter,                           // custom -> inlinehighlight.go
-			commandblocks.CommandExtender,                               // custom -> commandblokcs.go
-		),
+		goldmark.WithExtensions(extensions...),
 	)
 
 	var html bytes.Buffer

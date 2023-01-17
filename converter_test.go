@@ -188,3 +188,59 @@ It is the best answer.
 		t.Errorf("Expected the output to include %q but it was %q", expected, output)
 	}
 }
+func TestFrontMatterHide(t *testing.T) {
+	input, _ := os.ReadFile("examples/lesson2.md")
+	expected := "<p>This is a test.</p>\n"
+
+	o := ConverterOptions{
+		Wrap:               false,
+		WrapperClass:       "item",
+		AddStyleTag:        false,
+		AddHighlightJS:     false,
+		UseSVGforMermaid:   false,
+		AddMermaidJS:       false,
+		IncludeFrontmatter: false,
+	}
+
+	output, _ := Converter.Run(input, o)
+
+	if output != expected {
+		t.Errorf("Expected the output to include %q but it was %q", expected, output)
+	}
+}
+
+func TestFrontMatterShow(t *testing.T) {
+	input, _ := os.ReadFile("examples/lesson2.md")
+	expected := `<table>
+<thead>
+<tr>
+<th>title</th>
+<th>summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>this is a title</td>
+<td>this is a summary</td>
+</tr>
+</tbody>
+</table>
+<p>This is a test.</p>
+`
+
+	o := ConverterOptions{
+		Wrap:               false,
+		WrapperClass:       "item",
+		AddStyleTag:        false,
+		AddHighlightJS:     false,
+		UseSVGforMermaid:   false,
+		AddMermaidJS:       false,
+		IncludeFrontmatter: true,
+	}
+
+	output, _ := Converter.Run(input, o)
+
+	if output != expected {
+		t.Errorf("Expected the output to include %q but it was %q", expected, output)
+	}
+}
