@@ -9,6 +9,7 @@ Supports
 * Automatic linking of URLs.
 * Raw "pass-through" HTML.
 * Client-side highlighting of source code blocks with "copy to clipboard" functionality.
+* Notices (admonitions, like "tip", "warning", "note", and others.)
 
 It also has a few additional Markdown extensions for rendering commands and program output, as well as highlighting text.
 
@@ -42,6 +43,12 @@ You can also use a Bash herestring:
 
 ```bash
 lessonmd <<< "Hello world" > lesson.html
+```
+
+If you're on macOS, you can send the output directly to the clipboard using the built-in `pbcopy` command:
+
+```bash
+lessonmd < lesson.md | pbcopy
 ```
 
 If you need to convert multiple files, you can do this in Bash:
@@ -181,6 +188,26 @@ Use the `-include-highlight-js` flag to add a `<script>` block to the bottom of 
 
 Alternatively, run with the `-print-highlight-js` option to emit just the script so you can add it to your LMS or platform.
 
+## Notices (Admonitions)
+
+Sometimes you'll want to have notices or callouts in your documents, often called "admonitions."
+
+    :::warning This is a warning
+    Use this to warn people of something that may go wrong.
+    :::
+
+This generates a block with a title and some contents:
+
+    <div class="notice warning">
+      <div class="notice-heading">This is a warning</div>
+      <div class="notice-body">
+        <p>Use this to warn people of something that may go wrong.</p>
+      </div>
+    </div>
+
+You can use `tip`, `info`, `note`, `caution`, or `warning`. You can place links or code blocks within this as well.
+
+The included stylesheet has basic styling for these as well.
 
 ## For developers
 
@@ -201,6 +228,7 @@ Here's a map of what the files are in the project:
 ├── extensions              <- Custom GoldMark extensions
 │   ├── commandblocks       <- Parser and HTML renderer for command blocks
 │   ├── inlinehighlight     <- Parser and HTML renderer for inline highlighting
+│   ├── notices             <- Parser and HTML renderer for notices
 │   └── outputblocks        <- Parser and HTML renderer for output blocks
 ├── go.mod
 └── go.sum
@@ -210,7 +238,6 @@ Here's a map of what the files are in the project:
 
 There's a ton to do.
 
-* Admonisions (notes, tips, etc)
 * Math support - MathJax support for Goldmark is spotty and requires client-side work as well.
 * Support highlighting within code blocks
 * Create code block labels
@@ -221,6 +248,13 @@ What's not going to happen:
 * Conversion to other formats: Use Pandoc to convert the HTML.
 
 ## Changelog
+
+### 0.0.3 2023-07-10
+* Add admonitions: `tip`, `note`, `info`, `caution`, and `warning` and appropriate CSS.
+* Add link color to CSS.
+* Add table header CSS to make it stand out.
+* Add zebra striping to tables.
+
 
 ### 0.0.2 - 2023-01-17
 * If the document contains YAML front matter, it's ignored by default.

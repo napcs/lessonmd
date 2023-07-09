@@ -4,7 +4,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor 
 
 ```js
 let x = 2;
-console.log("The answer is " + x");
+console.log("The answer is " + x);
 console.log("It is the best answer.");
 ```
 
@@ -36,3 +36,44 @@ graph TD;
 ```
 
 See https://example.com for an example site.
+
+Here's a table:
+
+First name | Last name
+-----------|------------
+Homer      | Simpson
+Marge      | Simpson
+Barney     | Gumble
+
+
+:::note This is a note
+Use this to let people know things.
+
+This is `syntax`.
+:::
+
+:::tip This is a tip
+Use this to give people a tip.
+
+This is `syntax`.
+:::
+
+:::info This is an info box
+Use this to give people additional info.
+
+This is `syntax`.
+:::
+
+:::caution This is a caution
+Use this to give cautionary advice.
+
+This is `syntax`.
+:::
+
+:::warning This is a warning
+Use this to warn people of something that may go wrong.
+
+This is `syntax`.
+:::
+
+That's the end.

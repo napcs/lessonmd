@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"lessonmd/extensions/commandblocks"
 	"lessonmd/extensions/inlinehighlight"
+	"lessonmd/extensions/notices"
 	"lessonmd/extensions/outputblocks"
 	"strings"
 
@@ -16,7 +17,7 @@ import (
 )
 
 // AppVersion is the version of the app itself
-var AppVersion = "0.0.2"
+var AppVersion = "0.0.3"
 
 // ConverterOptions specifies options for converting.
 // wrap: wrap the results with a div
@@ -51,6 +52,7 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		outputblocks.OutputExtender,                                 // custom -> outputblocks.go
 		inlinehighlight.InlineHighlighter,                           // custom -> inlinehighlight.go
 		commandblocks.CommandExtender,                               // custom -> commandblokcs.go
+		notices.AdmonitionExtender,
 	}
 
 	if o.IncludeFrontmatter {
@@ -122,6 +124,8 @@ func (c *converter) GenerateCSS(class string) string {
   word-wrap: break-word
 }
 
+.item a { color: #0969da; }
+
 .item code,.item pre{
   font-family:Monaco, Andale Mono, Courier New, monospace;
   font-size:12px;
@@ -185,7 +189,7 @@ func (c *converter) GenerateCSS(class string) string {
 .item dl dd { padding: 0 16px; margin-bottom: 16px }
 
 .item table{width:100%;margin-bottom:18px;padding:0;border-collapse:separate;*border-collapse:collapse;font-size:13px;border:1px solid #ddd;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;}table th,table td{padding:10px 10px 9px;line-height:18px;text-align:left;}
-.item table th{padding-top:9px;font-weight:bold;vertical-align:middle;border-bottom:1px solid #ddd;}
+.item table th{padding-top:9px;font-weight:bold;vertical-align:middle;border-bottom:1px solid #ddd;color:ddd;background-color:#333;}
 .item table td{vertical-align:top;}
 .item table th+th, .item table td+td{border-left:1px solid #ddd;}
 .item table tr+tr td{border-top:1px solid #ddd;}
@@ -193,6 +197,7 @@ func (c *converter) GenerateCSS(class string) string {
 .item table tbody tr:first-child td:last-child{-webkit-border-radius:0 4px 0 0;-moz-border-radius:0 4px 0 0;border-radius:0 4px 0 0;}
 .item table tbody tr:last-child td:first-child{-webkit-border-radius:0 0 0 4px;-moz-border-radius:0 0 0 4px;border-radius:0 0 0 4px;}
 .item table tbody tr:last-child td:last-child{-webkit-border-radius:0 0 4px 0;-moz-border-radius:0 0 4px 0;border-radius:0 0 4px 0;}
+.item table tr:nth-child(even) { background-color: #e5e5e5; }
 
 .item img { max-width: 100%; box-sizing: initial; background-color: #fff }
 .item strong { font-weight: bolder }
@@ -211,9 +216,65 @@ func (c *converter) GenerateCSS(class string) string {
 .item .output p { margin: 0 0 0 4px}
 
 .item mark {
-  background-color: #f7f37c;
-  padding: 0 4px;
+  background-color: #fff8c5;
+  color: #24292f;
 }
+
+.item .notice {
+  border-style: solid;
+  border-width: 0 0 0 5px;
+  box-shadow: 0 1px 2px 0 #ddd;
+  color: #193c47;
+  margin-bottom: 1em;
+  padding: 0.5rem;
+}
+
+.item .notice .notice-heading {
+  font-size: 0.9em;
+  font-weight: bolder;
+  text-transform: uppercase;
+  margin-bottom: 1em;
+}
+
+.item .notice.note {
+  background-color: rgb(253, 253, 254);
+  border-color: rgb(212, 213, 216);
+  color: rgb(71, 71, 72)
+}
+.item .notice.note a{color: rgb(71, 71, 72); text-decoration-color: rgb(212, 213, 216)}
+
+.item .notice.tip {
+  background-color: rgb(230, 246, 230);
+  border-color: rgb(0, 148, 0);
+  color: rgb(0, 49, 0);
+}
+.item .notice.tip code {background-color: rgba(0, 164, 0, 0.15)}
+.item .notice.tip a {color: rgb(0, 49, 0); text-decoration-color: #009400}
+
+.item .notice.info {
+  background-color: rgb(238, 249, 253);
+  border-color: rgb(76, 179, 212);
+  color: rgb(25, 60, 71)
+}
+.item .notice.info code {background-color: rgba(84, 199, 236, 0.15)}
+.item .notice.info a {color: rgb(25, 60, 71); text-decoration-color: #4CB3D4}
+
+.item .notice.caution {
+  background-color: #fff8e6;
+  border-color: #e6a700;
+  color: rgb(77, 56, 0)
+}
+.item .notice.caution code {background-color: rgba(255, 186, 0, 0.15)}
+.item .notice.caution a {color: rgb(77, 56, 0); text-decoration-color: #e6a700}
+
+.item .notice.warning {
+  background-color: #FFEBEC;
+  border-color: #E13238;
+  color: #4b1113;
+}
+.item .notice.warning code {background-color: rgba(250, 56, 62, 0.15)}
+.item .notice.warning a {  color: #4b1113; text-decoration-color: #4b1113}
+
 `
 	style = strings.ReplaceAll(style, ".item", "."+class)
 	return style
