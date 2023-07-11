@@ -9,6 +9,12 @@ console.log("It is the best answer.");
 ```
 
 
+```js app.js
+let x = 2;
+console.log("The answer is " + x);
+console.log("It is the best answer.");
+```
+
 Run the command to execute ==foo.js==:
 
 ```command
@@ -75,5 +81,13 @@ Use this to warn people of something that may go wrong.
 
 This is `syntax`.
 :::
+
+[details What's the best Markdown tool?
+lessonmd is the best.
+]
+
+[details open These details are open
+And everyone can see them.
+]
 
 That's the end.

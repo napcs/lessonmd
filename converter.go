@@ -2,7 +2,9 @@ package lessonmd
 
 import (
 	"bytes"
+	"lessonmd/extensions/codeblocks"
 	"lessonmd/extensions/commandblocks"
+	"lessonmd/extensions/details"
 	"lessonmd/extensions/inlinehighlight"
 	"lessonmd/extensions/notices"
 	"lessonmd/extensions/outputblocks"
@@ -53,6 +55,8 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		inlinehighlight.InlineHighlighter,                           // custom -> inlinehighlight.go
 		commandblocks.CommandExtender,                               // custom -> commandblokcs.go
 		notices.AdmonitionExtender,
+		details.DetailsExtender,
+		codeblocks.CodeblockExtender,
 	}
 
 	if o.IncludeFrontmatter {
@@ -275,6 +279,36 @@ func (c *converter) GenerateCSS(class string) string {
 .item .notice.warning code {background-color: rgba(250, 56, 62, 0.15)}
 .item .notice.warning a {  color: #4b1113; text-decoration-color: #4b1113}
 
+.item details {
+  background-color: rgb(238, 249, 253);
+  border: 1px solid rgb(76, 179, 212);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px 0 #ddd;
+  color: #193c47;
+  margin-bottom: 1em;
+}
+
+.item details summary ~ * {
+  margin-top: 10px; /* Adjust the desired space (in pixels) */
+}
+
+.item details .details-content {
+  border-top: 1px solid rgb(76, 179, 212);
+  padding-top: 10px;
+}
+
+.item details summary {
+  border-radius: 10px;
+  color: rgb(25, 60, 71);
+  cursor: pointer;
+  list-style: none;
+  padding: 10px;
+}
+
+.item details summary::marker {display: none; }
+.item details summary::-webkit-details-marker {display: none; }
+.item details summary:before { content: "\25BA"; margin-right: 5px; } /* Unicode escape sequence for ► */
+.item details[open] summary:before { content: "\25BC"; } /* Unicode escape sequence for ▼ */
 `
 	style = strings.ReplaceAll(style, ".item", "."+class)
 	return style
