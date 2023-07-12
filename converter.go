@@ -2,7 +2,6 @@ package lessonmd
 
 import (
 	"bytes"
-	"lessonmd/extensions/codeblocks"
 	"lessonmd/extensions/commandblocks"
 	"lessonmd/extensions/details"
 	"lessonmd/extensions/inlinehighlight"
@@ -19,7 +18,7 @@ import (
 )
 
 // AppVersion is the version of the app itself
-var AppVersion = "0.0.3"
+var AppVersion = "0.0.4"
 
 // ConverterOptions specifies options for converting.
 // wrap: wrap the results with a div
@@ -56,7 +55,6 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		commandblocks.CommandExtender,                               // custom -> commandblokcs.go
 		notices.AdmonitionExtender,
 		details.DetailsExtender,
-		codeblocks.CodeblockExtender,
 	}
 
 	if o.IncludeFrontmatter {
@@ -294,6 +292,7 @@ func (c *converter) GenerateCSS(class string) string {
 
 .item details .details-content {
   border-top: 1px solid rgb(76, 179, 212);
+  margin: 10px;
   padding-top: 10px;
 }
 

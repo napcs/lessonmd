@@ -124,26 +124,6 @@ func TestCommandBlocks(t *testing.T) {
 	}
 }
 
-func TestCodeBlocksWithFilename(t *testing.T) {
-	input := []byte("```go app.go\nls -alh\n```")
-	expected := "<p>app.go</p>\n<pre><code class=\"language-go\">ls -alh\n</code></pre>\n"
-
-	o := ConverterOptions{
-		Wrap:             false,
-		WrapperClass:     "item",
-		AddStyleTag:      false,
-		AddHighlightJS:   false,
-		UseSVGforMermaid: false,
-		AddMermaidJS:     false,
-	}
-
-	output, _ := Converter.Run(input, o)
-
-	if !strings.Contains(output, expected) {
-		t.Errorf("Expected the output to include %q but it was %q", expected, output)
-	}
-}
-
 func TestOutputBlocks(t *testing.T) {
 	input := []byte("```output\nls -alh\n```")
 	expected := "<div class=\"output\">\n<p>Output</p>\n<pre><code>ls -alh\n</code></pre>\n</div>"

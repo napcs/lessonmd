@@ -152,6 +152,22 @@ Example:
     This is program output
     ```
 
+### Details (Expandable sections)
+
+
+You can now define a region that expands and collapses. These are good for questions and answers:
+
+    [details What's the best Markdown tool?
+    lessonmd is the best.
+    ]
+
+You can also make them open by default:
+
+    [details open These details are open
+    And everyone can see them.
+    ]
+
+
 
 ### Mermaid diagrams
 
@@ -248,6 +264,9 @@ What's not going to happen:
 * Conversion to other formats: Use Pandoc to convert the HTML.
 
 ## Changelog
+
+### 0.0.4 2023-07-11
+* Add support for details (expandable sections)
 
 ### 0.0.3 2023-07-10
 * Add admonitions: `tip`, `note`, `info`, `caution`, and `warning` and appropriate CSS.

@@ -4,7 +4,6 @@
 package lessonmd
 
 import (
-	"fmt"
 	"os"
 	"testing"
 )
@@ -16,13 +15,8 @@ func TestIntegration(t *testing.T) {
 <h1 id="lesson-item-title">Lesson item title</h1>
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 <pre><code class="language-js">let x = 2;
-console.log(&#34;The answer is &#34; + x);
-console.log(&#34;It is the best answer.&#34;);
-</code></pre>
-<p>app.js</p>
-<pre><code class="language-js">let x = 2;
-console.log(&#34;The answer is &#34; + x);
-console.log(&#34;It is the best answer.&#34;);
+console.log(&quot;The answer is &quot; + x);
+console.log(&quot;It is the best answer.&quot;);
 </code></pre>
 <p>Run the command to execute <mark class="inline-highlight">foo.js</mark>:</p>
 <pre><code class="language-bash command">node foo.js
@@ -124,7 +118,6 @@ It is the best answer.
 
 	output, _ := Converter.Run(input, o)
 
-	// fmt.Println(output)
 	if output != expected {
 		t.Errorf("Expected the output to include \n%q \nbut it was\n %q", expected, output)
 	}
