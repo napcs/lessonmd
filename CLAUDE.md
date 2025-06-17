@@ -18,6 +18,7 @@ The project follows a modular extension-based architecture:
   - `inlinehighlight/`: Enables `==text==` highlighting syntax
   - `notices/`: Implements admonitions (tip, warning, note, etc.)
   - `details/`: Provides expandable/collapsible sections
+  - `tabs/`: Creates tabbed content sections using `=== "Tab Title"` syntax
 
 Each extension follows the same pattern:
 - `extender.go`: Goldmark extension registration
@@ -66,10 +67,11 @@ go run bin/lessonmd.go -include-highlight-js -include-mermaid-js -include-styles
 - Uses Goldmark's extension system with parsers, AST transformers, and renderers
 - Extensions are registered in `converter.go` and applied to the Goldmark instance
 - The CLI tool in `bin/lessonmd.go` handles flag parsing and calls the converter
+- Configuration file support (`config.go`): YAML files for setting default options (`.lessonmd.yaml/yml`)
 - Version is managed in `converter.go` (`AppVersion` variable) and used by the Makefile for releases
 - All custom extensions follow Goldmark's priority system for proper parsing order
 - Output is wrapped in configurable div containers with CSS class support
 
 ## Testing Approach
 
-Tests are in `converter_test.go` and use table-driven testing patterns. Each test converts markdown input and compares against expected HTML output. Integration tests verify the full CLI workflow.
+Tests are in `converter_test.go` and use table-driven testing patterns. Each test converts markdown input and compares against expected HTML output. Integration tests in `integration_test.go` verify the full CLI workflow including file I/O and flag processing.
