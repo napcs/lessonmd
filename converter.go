@@ -478,19 +478,36 @@ function initializeTabs() {
             const button = e.target.closest('.tab-button');
             if (!button || !tabGroup.contains(button)) return;
             
-            const index = [...buttons].indexOf(button);
+            const tabName = button.getAttribute('data-tab-name');
+            if (!tabName) return;
             
-            // Remove active from all
-            buttons.forEach(b => {
-                b.classList.remove('active');
-                b.setAttribute('aria-selected', 'false');
+            // Find all tabs with the same data-tab-name across all tab groups
+            const allMatchingButtons = document.querySelectorAll('.item .tab-button[data-tab-name="' + tabName + '"]');
+            const allMatchingPanels = document.querySelectorAll('.item .tab-panel[data-tab-name="' + tabName + '"]');
+            
+            // Deactivate all tabs in all groups that contain matching tabs
+            allMatchingButtons.forEach(matchingButton => {
+                const parentTabGroup = matchingButton.closest('.tabs');
+                if (parentTabGroup) {
+                    // Deactivate all tabs in this group
+                    parentTabGroup.querySelectorAll('.tab-button').forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    parentTabGroup.querySelectorAll('.tab-panel').forEach(p => {
+                        p.classList.remove('active');
+                    });
+                }
             });
-            panels.forEach(p => p.classList.remove('active'));
             
-            // Activate clicked tab
-            button.classList.add('active');
-            button.setAttribute('aria-selected', 'true');
-            panels[index].classList.add('active');
+            // Activate all matching tabs
+            allMatchingButtons.forEach(matchingButton => {
+                matchingButton.classList.add('active');
+                matchingButton.setAttribute('aria-selected', 'true');
+            });
+            allMatchingPanels.forEach(matchingPanel => {
+                matchingPanel.classList.add('active');
+            });
         });
         
         // Keyboard navigation

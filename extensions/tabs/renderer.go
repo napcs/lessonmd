@@ -3,6 +3,7 @@ package tabs
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
@@ -25,6 +26,21 @@ func NewTabGroupHTMLRenderer(opts ...html.Option) renderer.NodeRenderer {
 		opt.SetHTMLOption(&r.Config)
 	}
 	return r
+}
+
+// normalizeTabName converts a tab title to a normalized data attribute value
+func normalizeTabName(title []byte) string {
+	name := strings.ToLower(string(title))
+	name = strings.ReplaceAll(name, " ", "-")
+	name = strings.ReplaceAll(name, "_", "-")
+	// Remove any characters that aren't alphanumeric or hyphens
+	var result strings.Builder
+	for _, r := range name {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
+			result.WriteRune(r)
+		}
+	}
+	return result.String()
 }
 
 // RegisterFuncs registers the rendering functions
@@ -68,6 +84,8 @@ func (r *TabGroupHTMLRenderer) renderTabGroup(w util.BufWriter, source []byte, n
 				_, _ = w.WriteString(panelID)
 				_, _ = w.WriteString("\" id=\"")
 				_, _ = w.WriteString(tabID)
+				_, _ = w.WriteString("\" data-tab-name=\"")
+				_, _ = w.WriteString(normalizeTabName(tab.Title))
 				_, _ = w.WriteString("\">")
 				_, _ = w.Write(util.EscapeHTML(tab.Title))
 				_, _ = w.WriteString("</button>\n")
@@ -165,6 +183,8 @@ func (r *TabGroupHTMLRenderer) renderTabGroupStart(w util.BufWriter, firstTab as
 			_, _ = w.WriteString(panelID)
 			_, _ = w.WriteString("\" id=\"")
 			_, _ = w.WriteString(tabID)
+			_, _ = w.WriteString("\" data-tab-name=\"")
+			_, _ = w.WriteString(normalizeTabName(tabNode.Title))
 			_, _ = w.WriteString("\">")
 			_, _ = w.Write(util.EscapeHTML(tabNode.Title))
 			_, _ = w.WriteString("</button>\n")
@@ -213,12 +233,15 @@ func (r *TabGroupHTMLRenderer) renderTabPanel(w util.BufWriter, n ast.Node, ente
 			activeClass = " active"
 		}
 		
+		tab := n.(*Tab)
 		_, _ = w.WriteString("    <div class=\"tab-panel")
 		_, _ = w.WriteString(activeClass)
 		_, _ = w.WriteString("\" role=\"tabpanel\" aria-labelledby=\"")
 		_, _ = w.WriteString(tabID)
 		_, _ = w.WriteString("\" id=\"")
 		_, _ = w.WriteString(panelID)
+		_, _ = w.WriteString("\" data-tab-name=\"")
+		_, _ = w.WriteString(normalizeTabName(tab.Title))
 		_, _ = w.WriteString("\">\n")
 	} else {
 		_, _ = w.WriteString("    </div>\n")

@@ -45,11 +45,44 @@ func (p *tabsParser) Open(parent ast.Node, reader text.Reader, pc parser.Context
 
 // Continue continues parsing a tab block
 func (p *tabsParser) Continue(node ast.Node, reader text.Reader, pc parser.Context) parser.State {
-	line, _ := reader.PeekLine()
+	line, segment := reader.PeekLine()
 	
 	// If we encounter another === line, this tab is done
 	if bytes.HasPrefix(line, []byte("=== \"")) {
 		return parser.Close
+	}
+	
+	// If we have an empty line, look ahead to check what follows
+	if len(bytes.TrimSpace(line)) == 0 {
+		// Create a temporary reader to look ahead without affecting the current position
+		source := reader.Source()
+		pos := segment.Start + segment.Len()
+		
+		// Skip additional blank lines
+		for pos < len(source) {
+			lineStart := pos
+			// Find end of line
+			for pos < len(source) && source[pos] != '\n' {
+				pos++
+			}
+			if pos < len(source) {
+				pos++ // Skip the newline
+			}
+			
+			// Check if this line has content
+			lineContent := bytes.TrimSpace(source[lineStart:pos-1])
+			if len(lineContent) == 0 {
+				continue // Skip blank lines
+			}
+			
+			// If the next non-empty line is not a tab line, close this tab group
+			if !bytes.HasPrefix(lineContent, []byte("=== \"")) {
+				return parser.Close
+			}
+			
+			// If it is a tab line, we can continue
+			break
+		}
 	}
 	
 	return parser.Continue | parser.HasChildren
