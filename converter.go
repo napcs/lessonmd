@@ -19,7 +19,7 @@ import (
 )
 
 // AppVersion is the version of the app itself
-var AppVersion = "0.0.4"
+var AppVersion = "0.0.5"
 
 // ConverterOptions specifies options for converting.
 // wrap: wrap the results with a div
