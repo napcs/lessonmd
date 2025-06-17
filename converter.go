@@ -110,7 +110,7 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 
 	// add the tabs.js code snippet at the bottom if requested (default is no)
 	if o.AddTabsJS {
-		out = out + c.addTabsJS()
+		out = out + c.addTabsJS(o.WrapperClass)
 	}
 
 	// Print HTML to standard output
@@ -462,31 +462,35 @@ loadHighlightJS();
 
 }
 
-func (c *converter) addTabsJS() string {
-	return "<script>" + c.GenerateTabsJS() + "</script>\n"
+func (c *converter) addTabsJS(class string) string {
+	return "<script>" + c.GenerateTabsJS(class) + "</script>\n"
 }
 
-func (c *converter) GenerateTabsJS() string {
-	return `
+func (c *converter) GenerateTabsJS(class string) string {
+	out := `
 function initializeTabs() {
-    document.querySelectorAll('.tabs').forEach(tabGroup => {
+    document.querySelectorAll('.item .tabs').forEach(tabGroup => {
         const buttons = tabGroup.querySelectorAll('.tab-button');
         const panels = tabGroup.querySelectorAll('.tab-panel');
         
-        buttons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                // Remove active from all
-                buttons.forEach(b => {
-                    b.classList.remove('active');
-                    b.setAttribute('aria-selected', 'false');
-                });
-                panels.forEach(p => p.classList.remove('active'));
-                
-                // Activate clicked tab
-                button.classList.add('active');
-                button.setAttribute('aria-selected', 'true');
-                panels[index].classList.add('active');
+        // Use event delegation for better performance
+        tabGroup.addEventListener('click', e => {
+            const button = e.target.closest('.tab-button');
+            if (!button || !tabGroup.contains(button)) return;
+            
+            const index = [...buttons].indexOf(button);
+            
+            // Remove active from all
+            buttons.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
             });
+            panels.forEach(p => p.classList.remove('active'));
+            
+            // Activate clicked tab
+            button.classList.add('active');
+            button.setAttribute('aria-selected', 'true');
+            panels[index].classList.add('active');
         });
         
         // Keyboard navigation
@@ -516,4 +520,6 @@ if (document.readyState === 'loading') {
     initializeTabs();
 }
 `
+	out = strings.ReplaceAll(out, ".item", "."+class)
+	return out
 }

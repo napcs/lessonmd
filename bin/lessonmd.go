@@ -60,7 +60,7 @@ func main() {
 	}
 
 	if *printTabs {
-		out := lessonmd.Converter.GenerateTabsJS()
+		out := lessonmd.Converter.GenerateTabsJS(*wrapperClass)
 		io.WriteString(os.Stdout, out)
 		os.Exit(0)
 	}
