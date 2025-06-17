@@ -7,6 +7,7 @@ import (
 	"lessonmd/extensions/inlinehighlight"
 	"lessonmd/extensions/notices"
 	"lessonmd/extensions/outputblocks"
+	"lessonmd/extensions/tabs"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -30,6 +31,7 @@ type ConverterOptions struct {
 	AddHighlightJS     bool
 	UseSVGforMermaid   bool
 	AddMermaidJS       bool
+	AddTabsJS          bool
 	IncludeFrontmatter bool
 }
 
@@ -55,6 +57,7 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 		commandblocks.CommandExtender,                               // custom -> commandblokcs.go
 		notices.AdmonitionExtender,
 		details.DetailsExtender,
+		tabs.TabsExtender,
 	}
 
 	if o.IncludeFrontmatter {
@@ -103,6 +106,11 @@ func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
 	// add the mermaid.js code snippet at the bottom if requested (default is no)
 	if o.AddMermaidJS {
 		out = out + c.addMermaidJS()
+	}
+
+	// add the tabs.js code snippet at the bottom if requested (default is no)
+	if o.AddTabsJS {
+		out = out + c.addTabsJS()
 	}
 
 	// Print HTML to standard output
@@ -308,6 +316,49 @@ func (c *converter) GenerateCSS(class string) string {
 .item details summary::-webkit-details-marker {display: none; }
 .item details summary:before { content: "\25BA"; margin-right: 5px; } /* Unicode escape sequence for ► */
 .item details[open] summary:before { content: "\25BC"; } /* Unicode escape sequence for ▼ */
+
+.item .tabs {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 1em 0;
+}
+
+.item .tabs-nav {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+}
+
+.item .tab-button {
+  background: none;
+  border: none;
+  padding: 0.75em 1em;
+  cursor: pointer;
+  white-space: nowrap;
+  color: #0969da;
+  font-size: 14px;
+}
+
+.item .tab-button:hover {
+  background: #e9ecef;
+}
+
+.item .tab-button.active {
+  background: #fff;
+  border-bottom: 2px solid #0969da;
+  color: #24292f;
+  font-weight: 600;
+}
+
+.item .tab-panel {
+  display: none;
+  padding: 1em;
+}
+
+.item .tab-panel.active {
+  display: block;
+}
 `
 	style = strings.ReplaceAll(style, ".item", "."+class)
 	return style
@@ -409,4 +460,60 @@ loadHighlightJS();
 	out = strings.ReplaceAll(out, ".item", "."+class)
 	return out
 
+}
+
+func (c *converter) addTabsJS() string {
+	return "<script>" + c.GenerateTabsJS() + "</script>\n"
+}
+
+func (c *converter) GenerateTabsJS() string {
+	return `
+function initializeTabs() {
+    document.querySelectorAll('.tabs').forEach(tabGroup => {
+        const buttons = tabGroup.querySelectorAll('.tab-button');
+        const panels = tabGroup.querySelectorAll('.tab-panel');
+        
+        buttons.forEach((button, index) => {
+            button.addEventListener('click', () => {
+                // Remove active from all
+                buttons.forEach(b => {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                panels.forEach(p => p.classList.remove('active'));
+                
+                // Activate clicked tab
+                button.classList.add('active');
+                button.setAttribute('aria-selected', 'true');
+                panels[index].classList.add('active');
+            });
+        });
+        
+        // Keyboard navigation
+        tabGroup.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                const activeIndex = Array.from(buttons).findIndex(b => b.classList.contains('active'));
+                let newIndex;
+                
+                if (e.key === 'ArrowLeft') {
+                    newIndex = activeIndex > 0 ? activeIndex - 1 : buttons.length - 1;
+                } else {
+                    newIndex = activeIndex < buttons.length - 1 ? activeIndex + 1 : 0;
+                }
+                
+                buttons[newIndex].click();
+                buttons[newIndex].focus();
+                e.preventDefault();
+            }
+        });
+    });
+}
+
+// Initialize when DOM ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTabs);
+} else {
+    initializeTabs();
+}
+`
 }

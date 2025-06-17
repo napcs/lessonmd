@@ -20,11 +20,13 @@ func main() {
 	help := flag.Bool("h", false, "Show this help message.")
 	highlightjs := flag.Bool("include-highlight-js", false, "Include script tags to include Highlight.js client-side libraries from CDN and add copy-to-clipboard functionality.")
 	mermaidJS := flag.Bool("include-mermaid-js", false, "Include script tags for client-side Mermaid rendering.")
+	tabsJS := flag.Bool("include-tabs-js", false, "Include script tags for client-side tabs functionality.")
 	styleTag := flag.Bool("include-stylesheet", false, "Include CSS in a <style> tag in the output.")
 	frontmatter := flag.Bool("include-frontmatter", false, "Include YAML frontmatter as a table. Defaults to false - frontmatter is omitted.")
 	mermaidSVG := flag.Bool("use-mermaid-svg-renderer", false, "Use embedded SVG for Mermaid instead of client-side JavaScript.")
 	printMermaid := flag.Bool("print-mermaid-js", false, "Print the JavaScript code for Mermaid support.")
 	printHighlight := flag.Bool("print-highlight-js", false, "Print the JavaScript code for client-side syntax and clipboard support.")
+	printTabs := flag.Bool("print-tabs-js", false, "Print the JavaScript code for client-side tabs functionality.")
 	printCSS := flag.Bool("print-stylesheet", false, "Print the CSS file to standard output. Provide optional parent class. (defaults to 'item' - use `-c` to change.)")
 
 	flag.Parse()
@@ -51,6 +53,12 @@ func main() {
 		os.Exit(0)
 	}
 
+	if *printTabs {
+		out := lessonmd.Converter.GenerateTabsJS()
+		io.WriteString(os.Stdout, out)
+		os.Exit(0)
+	}
+
 	if *printCSS {
 		css := lessonmd.Converter.GenerateCSS(*wrapperClass)
 		io.WriteString(os.Stdout, css)
@@ -72,6 +80,7 @@ func main() {
 		AddHighlightJS:     *highlightjs,
 		UseSVGforMermaid:   *mermaidSVG,
 		AddMermaidJS:       *mermaidJS,
+		AddTabsJS:          *tabsJS,
 		IncludeFrontmatter: *frontmatter,
 	}
 

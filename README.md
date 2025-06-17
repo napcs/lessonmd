@@ -10,6 +10,7 @@ Supports
 * Raw "pass-through" HTML.
 * Client-side highlighting of source code blocks with "copy to clipboard" functionality.
 * Notices (admonitions, like "tip", "warning", "note", and others.)
+* Tabbed content sections for organizing related information.
 
 It also has a few additional Markdown extensions for rendering commands and program output, as well as highlighting text.
 
@@ -167,6 +168,33 @@ You can also make them open by default:
     And everyone can see them.
     ]
 
+### Tabs
+
+You can create tabbed content sections to organize related information. Each tab is defined using the `=== "Tab Title"` syntax:
+
+    === "Installation"
+    You can install this using npm:
+    
+    ```bash
+    npm install -g lessonmd
+    ```
+    
+    === "Configuration"
+    Create a config file:
+    
+    ```yaml
+    theme: default
+    ```
+    
+    === "Usage"
+    Run the tool like this:
+    
+    ```bash
+    lessonmd < input.md > output.html
+    ```
+
+This creates an interactive tabbed interface where users can click between different sections. The first tab is automatically selected as active.
+
 
 
 ### Mermaid diagrams
@@ -264,6 +292,9 @@ What's not going to happen:
 * Conversion to other formats: Use Pandoc to convert the HTML.
 
 ## Changelog
+
+### 0.0.5 (upcoming)
+* Add support for tabbed content sections
 
 ### 0.0.4 2023-07-11
 * Add support for details (expandable sections)
