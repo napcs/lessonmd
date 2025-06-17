@@ -13,17 +13,23 @@ func banner() {
 }
 
 func main() {
+	// Load config file first to set defaults
+	config, err := lessonmd.LoadConfig()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: %v\n", err)
+		config = lessonmd.DefaultConfig()
+	}
 
 	version := flag.Bool("v", false, "Prints current app version.")
-	nowrap := flag.Bool("no-wrap", false, "Do not wrap output with outer <div> tag.")
-	wrapperClass := flag.String("c", "item", "The class name for outer div (defaults to 'item'.")
+	nowrap := flag.Bool("no-wrap", config.NoWrap, "Do not wrap output with outer <div> tag.")
+	wrapperClass := flag.String("c", config.WrapperClass, "The class name for outer div (defaults to 'item'.")
 	help := flag.Bool("h", false, "Show this help message.")
-	highlightjs := flag.Bool("include-highlight-js", false, "Include script tags to include Highlight.js client-side libraries from CDN and add copy-to-clipboard functionality.")
-	mermaidJS := flag.Bool("include-mermaid-js", false, "Include script tags for client-side Mermaid rendering.")
-	tabsJS := flag.Bool("include-tabs-js", false, "Include script tags for client-side tabs functionality.")
-	styleTag := flag.Bool("include-stylesheet", false, "Include CSS in a <style> tag in the output.")
-	frontmatter := flag.Bool("include-frontmatter", false, "Include YAML frontmatter as a table. Defaults to false - frontmatter is omitted.")
-	mermaidSVG := flag.Bool("use-mermaid-svg-renderer", false, "Use embedded SVG for Mermaid instead of client-side JavaScript.")
+	highlightjs := flag.Bool("include-highlight-js", config.IncludeHighlightJS, "Include script tags to include Highlight.js client-side libraries from CDN and add copy-to-clipboard functionality.")
+	mermaidJS := flag.Bool("include-mermaid-js", config.IncludeMermaidJS, "Include script tags for client-side Mermaid rendering.")
+	tabsJS := flag.Bool("include-tabs-js", config.IncludeTabsJS, "Include script tags for client-side tabs functionality.")
+	styleTag := flag.Bool("include-stylesheet", config.IncludeStylesheet, "Include CSS in a <style> tag in the output.")
+	frontmatter := flag.Bool("include-frontmatter", config.IncludeFrontmatter, "Include YAML frontmatter as a table. Defaults to false - frontmatter is omitted.")
+	mermaidSVG := flag.Bool("use-mermaid-svg-renderer", config.UseMermaidSVGRenderer, "Use embedded SVG for Mermaid instead of client-side JavaScript.")
 	printMermaid := flag.Bool("print-mermaid-js", false, "Print the JavaScript code for Mermaid support.")
 	printHighlight := flag.Bool("print-highlight-js", false, "Print the JavaScript code for client-side syntax and clipboard support.")
 	printTabs := flag.Bool("print-tabs-js", false, "Print the JavaScript code for client-side tabs functionality.")

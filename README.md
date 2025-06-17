@@ -34,6 +34,59 @@ The most basic usage would be like the following example, where `lesson.md` is t
 lessonmd < lesson.md > lesson.html
 ```
 
+### Configuration File
+
+You can configure default options using a YAML configuration file. The tool looks for configuration files in the following locations (in order):
+
+1. `.lessonmd.yaml` in the current directory
+2. `.lessonmd.yml` in the current directory  
+3. `$HOME/.lessonmd.yaml`
+4. `$HOME/.lessonmd.yml`
+
+#### Configuration File Format
+
+Create a YAML file with any of the following options:
+
+```yaml
+# Basic output options
+wrapper-class: "lesson"          # CSS class for outer div (default: "item")
+no-wrap: false                   # Don't wrap output in div (default: false)
+
+# Content inclusion options
+include-stylesheet: true         # Include CSS in <style> tag (default: false)
+include-frontmatter: false       # Include YAML frontmatter as table (default: false)
+
+# JavaScript library options
+include-highlight-js: true       # Include Highlight.js from CDN (default: false)
+include-mermaid-js: false        # Include Mermaid.js from CDN (default: false)
+include-tabs-js: false           # Include tabs JavaScript (default: false)
+
+# Mermaid rendering options
+use-mermaid-svg-renderer: false  # Use server-side SVG for Mermaid (default: false)
+```
+
+#### Configuration Example
+
+Here's a complete example configuration file (`.lessonmd.yaml`):
+
+```yaml
+# Use custom CSS class for styling
+wrapper-class: "course-content"
+
+# Always include essential features
+include-stylesheet: true
+include-highlight-js: true
+include-mermaid-js: true
+
+# Don't include frontmatter by default
+include-frontmatter: false
+
+# Use client-side Mermaid rendering
+use-mermaid-svg-renderer: false
+```
+
+**Note:** Command-line flags always override configuration file settings. This allows you to set sensible defaults in your config file while still being able to override them when needed.
+
 If you prefer, you can pipe the output of `cat`:
 
 ```bash
