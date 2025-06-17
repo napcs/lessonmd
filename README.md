@@ -226,11 +226,7 @@ You can also make them open by default:
 You can create tabbed content sections to organize related information. Each tab is defined using the `=== "Tab Title"` syntax:
 
     === "Installation"
-    You can install this using npm:
-    
-    ```bash
-    npm install -g lessonmd
-    ```
+    Download the binary for your OS and place it on your `PATH`
     
     === "Configuration"
     Create a config file:
