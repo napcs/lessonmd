@@ -42,6 +42,11 @@ var Converter = &converter{}
 
 // Run does the conversion, using ConverterOptions. Takes a byte slice (usually from a reader) and returns a string.
 func (c *converter) Run(markdown []byte, o ConverterOptions) (string, error) {
+	
+	// Auto-detect tabs syntax and enable tabs JS if found
+	if !o.AddTabsJS && c.containsTabsSyntax(markdown) {
+		o.AddTabsJS = true
+	}
 
 	mmRenderMode := mermaid.RenderModeClient
 
@@ -516,4 +521,9 @@ if (document.readyState === 'loading') {
     initializeTabs();
 }
 `
+}
+
+// containsTabsSyntax checks if the markdown contains tabs syntax (=== "Title")
+func (c *converter) containsTabsSyntax(markdown []byte) bool {
+	return bytes.Contains(markdown, []byte("=== \""))
 }
