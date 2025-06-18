@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+    
+    - name: Get version
+      id: version
+      run: echo "VERSION=$(go run bin/lessonmd.go -v | cut -c11-)" >> $GITHUB_OUTPUT
+    
+    - name: Build and package Windows 64-bit
+      run: |
+        env GOOS=windows GOARCH=amd64 go build -o lessonmd.exe bin/lessonmd.go
+        zip lessonmd_${{ steps.version.outputs.VERSION }}_windows64.zip lessonmd.exe
+        rm lessonmd.exe
+    
+    - name: Build and package macOS Intel
+      run: |
+        env GOOS=darwin GOARCH=amd64 go build -o lessonmd bin/lessonmd.go
+        zip lessonmd_${{ steps.version.outputs.VERSION }}_mac_intel.zip lessonmd
+        rm lessonmd
+    
+    - name: Build and package macOS Silicon
+      run: |
+        env GOOS=darwin GOARCH=arm64 go build -o lessonmd bin/lessonmd.go
+        zip lessonmd_${{ steps.version.outputs.VERSION }}_mac_silicon.zip lessonmd
+        rm lessonmd
+    
+    - name: Build and package Linux 64-bit
+      run: |
+        env GOOS=linux GOARCH=amd64 go build -o lessonmd bin/lessonmd.go
+        zip lessonmd_${{ steps.version.outputs.VERSION }}_linux64.zip lessonmd
+        tar -czf lessonmd_${{ steps.version.outputs.VERSION }}_linux64.tar.gz lessonmd
+        rm lessonmd
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          lessonmd_${{ steps.version.outputs.VERSION }}_windows64.zip
+          lessonmd_${{ steps.version.outputs.VERSION }}_mac_intel.zip
+          lessonmd_${{ steps.version.outputs.VERSION }}_mac_silicon.zip
+          lessonmd_${{ steps.version.outputs.VERSION }}_linux64.zip
+          lessonmd_${{ steps.version.outputs.VERSION }}_linux64.tar.gz
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
