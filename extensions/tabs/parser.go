@@ -45,44 +45,37 @@ func (p *tabsParser) Open(parent ast.Node, reader text.Reader, pc parser.Context
 
 // Continue continues parsing a tab block
 func (p *tabsParser) Continue(node ast.Node, reader text.Reader, pc parser.Context) parser.State {
-	line, segment := reader.PeekLine()
+	line, _ := reader.PeekLine()
 	
 	// If we encounter another === line, this tab is done
 	if bytes.HasPrefix(line, []byte("=== \"")) {
 		return parser.Close
 	}
 	
-	// If we have an empty line, look ahead to check what follows
-	if len(bytes.TrimSpace(line)) == 0 {
-		// Create a temporary reader to look ahead without affecting the current position
-		source := reader.Source()
-		pos := segment.Start + segment.Len()
-		
-		// Skip additional blank lines
-		for pos < len(source) {
-			lineStart := pos
-			// Find end of line
-			for pos < len(source) && source[pos] != '\n' {
-				pos++
-			}
-			if pos < len(source) {
-				pos++ // Skip the newline
-			}
-			
-			// Check if this line has content
-			lineContent := bytes.TrimSpace(source[lineStart:pos-1])
-			if len(lineContent) == 0 {
-				continue // Skip blank lines
-			}
-			
-			// If the next non-empty line is not a tab line, close this tab group
-			if !bytes.HasPrefix(lineContent, []byte("=== \"")) {
-				return parser.Close
-			}
-			
-			// If it is a tab line, we can continue
-			break
-		}
+	// Check if this is an empty line
+	trimmedLine := bytes.TrimSpace(line)
+	if len(trimmedLine) == 0 {
+		// Empty lines are allowed within tabs, continue parsing
+		return parser.Continue | parser.HasChildren
+	}
+	
+	// Check indentation level - content must be indented by at least 2 spaces to stay in tab
+	indentLevel := getIndentationLevel(line)
+	if indentLevel < 2 {
+		// Content has returned to root level (less than 2 spaces), close this tab
+		return parser.Close
+	}
+	
+	// Remove the first 2 spaces from the line to normalize indentation
+	// This is done by advancing the segment start position
+	spacesToRemove := 0
+	for i := 0; i < len(line) && i < 2 && line[i] == ' '; i++ {
+		spacesToRemove++
+	}
+	
+	if spacesToRemove > 0 {
+		// Adjust the reader to skip the leading spaces
+		reader.Advance(spacesToRemove)
 	}
 	
 	return parser.Continue | parser.HasChildren
@@ -103,6 +96,26 @@ func (p *tabsParser) CanAcceptIndentedLine() bool {
 	return false
 }
 
+
+// getIndentationLevel returns the number of leading spaces in a line
+func getIndentationLevel(line []byte) int {
+	count := 0
+	for i, b := range line {
+		if b == ' ' {
+			count++
+		} else if b == '\t' {
+			// Count tabs as 4 spaces for consistency
+			count += 4
+		} else {
+			break
+		}
+		// Don't count beyond the line length
+		if i >= len(line)-1 {
+			break
+		}
+	}
+	return count
+}
 
 // extractTabTitle extracts the title from a === "Title" line
 func extractTabTitle(line []byte) []byte {
