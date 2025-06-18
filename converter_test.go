@@ -16,6 +16,7 @@ func TestConvert(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -35,6 +36,7 @@ func TestAllowRawHTML(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -55,6 +57,7 @@ func TestAddWrapper(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -75,6 +78,7 @@ func TestAddWrapperWithCustomClass(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -95,6 +99,7 @@ func TestCustomClassInCSS(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -115,6 +120,7 @@ func TestCommandBlocks(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -135,6 +141,7 @@ func TestOutputBlocks(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -155,6 +162,7 @@ func TestFrontMatterHide(t *testing.T) {
 		AddHighlightJS:     false,
 		UseSVGforMermaid:   false,
 		AddMermaidJS:       false,
+		AddTabsJS:          false,
 		IncludeFrontmatter: false,
 	}
 
@@ -191,6 +199,7 @@ func TestFrontMatterShow(t *testing.T) {
 		AddHighlightJS:     false,
 		UseSVGforMermaid:   false,
 		AddMermaidJS:       false,
+		AddTabsJS:          false,
 		IncludeFrontmatter: true,
 	}
 
@@ -218,6 +227,7 @@ func TestFences(t *testing.T) {
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -259,6 +269,7 @@ This is the output.
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -290,6 +301,7 @@ You need to use it.
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
@@ -321,11 +333,165 @@ You need to use it.
 		AddHighlightJS:   false,
 		UseSVGforMermaid: false,
 		AddMermaidJS:     false,
+		AddTabsJS:        false,
 	}
 
 	output, _ := Converter.Run(input, o)
 
 	if !strings.Contains(output, expected) {
 		t.Errorf("Expected the output to include %q but it was %q", expected, output)
+	}
+}
+
+func TestBasicTabs(t *testing.T) {
+	inputStr := `=== "JavaScript Example"
+` + "```javascript\nconsole.log(\"Hello, World!\");\n```" + `
+
+=== "Python Example"
+` + "```python\nprint(\"Hello, World!\")\n```" + `
+
+=== "Go Example"
+` + "```go\nfmt.Println(\"Hello, World!\")\n```" + `
+`
+	input := []byte(inputStr)
+
+	expected := `<div class="tabs" id="tabs-1">`
+
+	o := ConverterOptions{
+		Wrap:             false,
+		WrapperClass:     "item",
+		AddStyleTag:      false,
+		AddHighlightJS:   false,
+		UseSVGforMermaid: false,
+		AddMermaidJS:     false,
+		AddTabsJS:        false,
+	}
+
+	output, _ := Converter.Run(input, o)
+
+	if !strings.Contains(output, expected) {
+		t.Errorf("Expected the output to include %q but it was %q", expected, output)
+	}
+
+	// Check for tab buttons
+	if !strings.Contains(output, `<button class="tab-button active"`) {
+		t.Errorf("Expected output to contain active tab button")
+	}
+
+	// Check for tab panels
+	if !strings.Contains(output, `<div class="tab-panel active"`) {
+		t.Errorf("Expected output to contain active tab panel")
+	}
+
+	// Check for all three tabs
+	if !strings.Contains(output, "JavaScript Example") || !strings.Contains(output, "Python Example") || !strings.Contains(output, "Go Example") {
+		t.Errorf("Expected output to contain all tab titles")
+	}
+}
+
+func TestSingleTab(t *testing.T) {
+	inputStr := `=== "Only Tab"
+This is the only content.
+`
+	input := []byte(inputStr)
+
+	expected := `<div class="tabs" id="tabs-1">`
+
+	o := ConverterOptions{
+		Wrap:             false,
+		WrapperClass:     "item",
+		AddStyleTag:      false,
+		AddHighlightJS:   false,
+		UseSVGforMermaid: false,
+		AddMermaidJS:     false,
+		AddTabsJS:        false,
+	}
+
+	output, _ := Converter.Run(input, o)
+
+	if !strings.Contains(output, expected) {
+		t.Errorf("Expected the output to include %q but it was %q", expected, output)
+	}
+
+	// Check that single tab is active by default
+	if !strings.Contains(output, `<button class="tab-button active"`) {
+		t.Errorf("Expected single tab to be active by default")
+	}
+}
+
+func TestTabsWithDifferentContent(t *testing.T) {
+	inputStr := `=== "Text Tab"
+Just some text.
+
+=== "List Tab"
+- Item 1
+- Item 2
+- Item 3
+
+=== "Code Tab"
+` + "```bash\necho \"Hello\"\n```" + `
+`
+	input := []byte(inputStr)
+
+	expected := `<div class="tabs" id="tabs-1">`
+
+	o := ConverterOptions{
+		Wrap:             false,
+		WrapperClass:     "item",
+		AddStyleTag:      false,
+		AddHighlightJS:   false,
+		UseSVGforMermaid: false,
+		AddMermaidJS:     false,
+		AddTabsJS:        false,
+	}
+
+	output, _ := Converter.Run(input, o)
+
+	if !strings.Contains(output, expected) {
+		t.Errorf("Expected the output to include %q but it was %q", expected, output)
+	}
+
+	// Check for different content types
+	if !strings.Contains(output, "<p>Just some text.</p>") {
+		t.Errorf("Expected output to contain paragraph text")
+	}
+
+	if !strings.Contains(output, "<ul>") {
+		t.Errorf("Expected output to contain unordered list")
+	}
+
+	if !strings.Contains(output, `<pre><code class="language-bash">`) {
+		t.Errorf("Expected output to contain code block")
+	}
+}
+
+func TestTabsJavaScriptInclusion(t *testing.T) {
+	inputStr := `=== "Tab 1"
+Content 1
+
+=== "Tab 2"
+Content 2
+`
+	input := []byte(inputStr)
+
+	o := ConverterOptions{
+		Wrap:             false,
+		WrapperClass:     "item",
+		AddStyleTag:      false,
+		AddHighlightJS:   false,
+		UseSVGforMermaid: false,
+		AddMermaidJS:     false,
+		AddTabsJS:        true,
+	}
+
+	output, _ := Converter.Run(input, o)
+
+	// Check for JavaScript inclusion
+	if !strings.Contains(output, "<script>") {
+		t.Errorf("Expected output to contain script tag when AddTabsJS is true")
+	}
+
+	if !strings.Contains(output, "initializeTabs") {
+		t.Errorf("Expected output to contain tabs JavaScript function")
 	}
 }
