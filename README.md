@@ -223,24 +223,34 @@ You can also make them open by default:
 
 ### Tabs
 
-You can create tabbed content sections to organize related information. Each tab is defined using the `=== "Tab Title"` syntax:
+You can create tabbed content sections to organize related information. Each tab is defined using the `=== "Tab Title"` syntax, and all content under a tab must be indented by at least 2 spaces:
 
     === "Installation"
-    Download the binary for your OS and place it on your `PATH`
+        Download the binary for your OS and place it on your `PATH`.
+        
+        You can also install from source if needed.
     
     === "Configuration"
-    Create a config file:
-    
-    ```yaml
-    theme: default
-    ```
+        Create a config file:
+        
+        ```yaml
+        theme: default
+        ```
+        
+        Save this as `.lessonmd.yaml` in your project directory.
     
     === "Usage"
-    Run the tool like this:
-    
-    ```bash
-    lessonmd < input.md > output.html
-    ```
+        Run the tool like this:
+        
+        ```bash
+        lessonmd < input.md > output.html
+        ```
+        
+        This will convert your Markdown to HTML.
+
+    This text is not indented, so it appears outside the tabs.
+
+**Important:** All content belonging to a tab must be indented by at least 2 spaces. When content returns to the original indentation level (no spaces), it will appear outside the tab group. Empty lines within tabs are allowed and don't end the tab content.
 
 This creates an interactive tabbed interface where users can click between different sections. The first tab is automatically selected as active.
 
